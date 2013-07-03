@@ -67,7 +67,7 @@ pthread_mutex_t guard_mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  guard_cv  = PTHREAD_COND_INITIALIZER;
 #endif
 
-#if defined(__APPLE__) && !defined(__arm__)
+#if (defined(__APPLE__) || defined(__DUETTO__)) && !defined(__arm__)
 
 typedef uint32_t lock_type;
 
@@ -188,8 +188,10 @@ void __cxa_guard_abort(guard_type* guard_object)
 int __cxa_guard_acquire(guard_type* guard_object)
 {
     char* initialized = (char*)guard_object;
+#ifndef __DUETTO__
     if (pthread_mutex_lock(&guard_mut))
         abort_message("__cxa_guard_acquire failed to acquire mutex");
+#endif
     int result = *initialized == 0;
     if (result)
     {
@@ -214,40 +216,52 @@ int __cxa_guard_acquire(guard_type* guard_object)
         else
             set_lock(*guard_object, id);
 #else  // !__APPLE__ || __arm__
+#ifndef __DUETTO__
         while (get_lock(*guard_object))
             if (pthread_cond_wait(&guard_cv, &guard_mut))
                 abort_message("__cxa_guard_acquire condition variable wait failed");
+#endif
         result = *initialized == 0;
         if (result)
             set_lock(*guard_object, true);
 #endif  // !__APPLE__ || __arm__
     }
+#ifndef __DUETTO__
     if (pthread_mutex_unlock(&guard_mut))
         abort_message("__cxa_guard_acquire failed to release mutex");
+#endif
     return result;
 }
 
 void __cxa_guard_release(guard_type* guard_object)
 {
+#ifndef __DUETTO__
     if (pthread_mutex_lock(&guard_mut))
         abort_message("__cxa_guard_release failed to acquire mutex");
+#endif
     *guard_object = 0;
     set_initialized(guard_object);
+#ifndef __DUETTO__
     if (pthread_mutex_unlock(&guard_mut))
         abort_message("__cxa_guard_release failed to release mutex");
     if (pthread_cond_broadcast(&guard_cv))
         abort_message("__cxa_guard_release failed to broadcast condition variable");
+#endif
 }
 
 void __cxa_guard_abort(guard_type* guard_object)
 {
+#ifndef __DUETTO__
     if (pthread_mutex_lock(&guard_mut))
         abort_message("__cxa_guard_abort failed to acquire mutex");
+#endif
     *guard_object = 0;
+#ifndef __DUETTO__
     if (pthread_mutex_unlock(&guard_mut))
         abort_message("__cxa_guard_abort failed to release mutex");
     if (pthread_cond_broadcast(&guard_cv))
         abort_message("__cxa_guard_abort failed to broadcast condition variable");
+#endif
 }
 
 #endif // !LIBCXXABI_HAS_NO_THREADS
