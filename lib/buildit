@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 #
 # Set the $TRIPLE environment variable to your system's triple before
 # running this script.  If you set $CXX, that will be used to compile
@@ -82,7 +82,17 @@ fi
 set -x
 
 for FILE in ../src/*.cpp; do
-	$CXX -c -g -O3 $RC_CFLAGS $EXTRA_FLAGS -I../include $OPTIONS $FILE
+	if [ "$FILE" == "../src/cxa_default_handlers.cpp" -o \
+		"$FILE" == "../src/cxa_exception.cpp" -o \
+		"$FILE" == "../src/cxa_handlers.cpp" -o \
+		"$FILE" == "../src/cxa_exception_storage.cpp" -o \
+		"$FILE" == "../src/cxa_unexpected.cpp" -o \
+		"$FILE" == "../src/cxa_personality.cpp" ]
+	then
+		echo "Skipping $FILE";
+	else
+		$CXX -c -O3 $RC_CFLAGS $EXTRA_FLAGS -I../include $OPTIONS $FILE
+	fi
 done
 case $TRIPLE in
   *-*-mingw*)
@@ -91,7 +101,7 @@ case $TRIPLE in
   done
   ;;
 esac
-$CC *.o $RC_CFLAGS $LDSHARED_FLAGS $EXTRA_FLAGS
+/opt/duetto/bin/llvm-link *.o -o libcxxabi.bc
 
 if [ -z $RC_XBS ]
 then
