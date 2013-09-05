@@ -1,5 +1,24 @@
 //===---------------------------- cxa_guard.cpp ---------------------------===//
 //
+// Copyright (C) 2013 Alessandro Pignotti <alessandro@leaningtech.com>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+//
+// This file incorporates work covered by the following copyright and
+// permission notice:
+//
 //                     The LLVM Compiler Infrastructure
 //
 // This file is dual licensed under the MIT and the University of Illinois Open
@@ -30,7 +49,7 @@ namespace __cxxabiv1
 namespace
 {
 
-#if __arm__
+#if __arm__ || __DUETTO__
 
 // A 32-bit, 4-byte-aligned static data value. The least significant 2 bits must
 // be statically initialized to 0.
@@ -72,6 +91,21 @@ typedef uint32_t lock_type;
 
 #if __LITTLE_ENDIAN__
 
+#ifdef __DUETTO__
+inline
+lock_type
+get_lock(uint32_t x)
+{
+    return static_cast<lock_type>(x);
+}
+
+inline
+void
+set_lock(uint32_t& x, lock_type y)
+{
+    x = static_cast<uint32_t>(y);
+}
+#else // __DUETTO__
 inline
 lock_type
 get_lock(uint64_t x)
@@ -85,6 +119,7 @@ set_lock(uint64_t& x, lock_type y)
 {
     x = static_cast<uint64_t>(y) << 32;
 }
+#endif // __DUETTO__
 
 #else  // __LITTLE_ENDIAN__
 
