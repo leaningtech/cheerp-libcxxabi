@@ -87,6 +87,7 @@ for FILE in ../src/*.cpp; do
 		"$FILE" == "../src/cxa_handlers.cpp" -o \
 		"$FILE" == "../src/cxa_exception_storage.cpp" -o \
 		"$FILE" == "../src/cxa_unexpected.cpp" -o \
+		"$FILE" == "../src/private_typeinfo.cpp" -o \
 		"$FILE" == "../src/cxa_personality.cpp" ]
 	then
 		echo "Skipping $FILE";
