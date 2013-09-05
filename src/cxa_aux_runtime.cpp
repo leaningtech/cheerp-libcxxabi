@@ -22,12 +22,16 @@ extern "C"
 
 LIBCXXABI_NORETURN
 void __cxa_bad_cast (void) {
+#ifndef __DUETTO__
     throw std::bad_cast();
+#endif
 }
 
 LIBCXXABI_NORETURN
 void __cxa_bad_typeid(void) {
+#ifndef __DUETTO__
     throw std::bad_typeid();
+#endif
 }
 
 LIBCXXABI_NORETURN
