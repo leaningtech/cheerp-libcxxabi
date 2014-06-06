@@ -102,7 +102,7 @@ case $TRIPLE in
   done
   ;;
 esac
-/opt/duetto/bin/llvm-link *.o -o libcxxabi.bc
+/opt/cheerp/bin/llvm-link *.o -o libcxxabi.bc
 
 if [ -z $RC_XBS ]
 then
