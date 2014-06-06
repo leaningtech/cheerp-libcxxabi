@@ -28,7 +28,7 @@
 
 #include "abort_message.h"
 
-#ifndef __DUETTO__
+#ifndef __CHEERP__
 #include <pthread.h>
 #endif
 #include <stdint.h>
@@ -49,7 +49,7 @@ namespace __cxxabiv1
 namespace
 {
 
-#if __arm__ || __DUETTO__
+#if __arm__ || __CHEERP__
 
 // A 32-bit, 4-byte-aligned static data value. The least significant 2 bits must
 // be statically initialized to 0.
@@ -80,18 +80,18 @@ void set_initialized(guard_type* guard_object) {
 
 #endif
 
-#ifndef __DUETTO__
+#ifndef __CHEERP__
 pthread_mutex_t guard_mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  guard_cv  = PTHREAD_COND_INITIALIZER;
 #endif
 
-#if (defined(__APPLE__) || defined(__DUETTO__)) && !defined(__arm__)
+#if (defined(__APPLE__) || defined(__CHEERP__)) && !defined(__arm__)
 
 typedef uint32_t lock_type;
 
 #if __LITTLE_ENDIAN__
 
-#ifdef __DUETTO__
+#ifdef __CHEERP__
 inline
 lock_type
 get_lock(uint32_t x)
@@ -105,7 +105,7 @@ set_lock(uint32_t& x, lock_type y)
 {
     x = static_cast<uint32_t>(y);
 }
-#else // __DUETTO__
+#else // __CHEERP__
 inline
 lock_type
 get_lock(uint64_t x)
@@ -119,7 +119,7 @@ set_lock(uint64_t& x, lock_type y)
 {
     x = static_cast<uint64_t>(y) << 32;
 }
-#endif // __DUETTO__
+#endif // __CHEERP__
 
 #else  // __LITTLE_ENDIAN__
 
@@ -203,7 +203,7 @@ extern "C"
 int __cxa_guard_acquire(guard_type* guard_object)
 {
     char* initialized = (char*)guard_object;
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     if (pthread_mutex_lock(&guard_mut))
         abort_message("__cxa_guard_acquire failed to acquire mutex");
 #endif
@@ -231,7 +231,7 @@ int __cxa_guard_acquire(guard_type* guard_object)
         else
             set_lock(*guard_object, id);
 #else  // !__APPLE__ || __arm__
-#ifndef __DUETTO__
+#ifndef __CHEERP__
         while (get_lock(*guard_object))
             if (pthread_cond_wait(&guard_cv, &guard_mut))
                 abort_message("__cxa_guard_acquire condition variable wait failed");
@@ -241,7 +241,7 @@ int __cxa_guard_acquire(guard_type* guard_object)
             set_lock(*guard_object, true);
 #endif  // !__APPLE__ || __arm__
     }
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     if (pthread_mutex_unlock(&guard_mut))
         abort_message("__cxa_guard_acquire failed to release mutex");
 #endif
@@ -250,13 +250,13 @@ int __cxa_guard_acquire(guard_type* guard_object)
 
 void __cxa_guard_release(guard_type* guard_object)
 {
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     if (pthread_mutex_lock(&guard_mut))
         abort_message("__cxa_guard_release failed to acquire mutex");
 #endif
     *guard_object = 0;
     set_initialized(guard_object);
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     if (pthread_mutex_unlock(&guard_mut))
         abort_message("__cxa_guard_release failed to release mutex");
     if (pthread_cond_broadcast(&guard_cv))
@@ -266,12 +266,12 @@ void __cxa_guard_release(guard_type* guard_object)
 
 void __cxa_guard_abort(guard_type* guard_object)
 {
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     if (pthread_mutex_lock(&guard_mut))
         abort_message("__cxa_guard_abort failed to acquire mutex");
 #endif
     *guard_object = 0;
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     if (pthread_mutex_unlock(&guard_mut))
         abort_message("__cxa_guard_abort failed to release mutex");
     if (pthread_cond_broadcast(&guard_cv))

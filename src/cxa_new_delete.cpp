@@ -47,7 +47,7 @@ operator new(std::size_t size)
         if (nh)
             nh();
         else
-#ifdef __DUETTO__
+#ifdef __CHEERP__
             return 0;
 #else
             throw std::bad_alloc();
@@ -73,17 +73,17 @@ void*
 operator new(size_t size, const std::nothrow_t&)
 #if __has_feature(cxx_noexcept)
     noexcept
-#elif !defined(__DUETTO__)
+#elif !defined(__CHEERP__)
     throw()
 #endif
 {
     void* p = 0;
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     try
     {
 #endif
         p = ::operator new(size);
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     }
     catch (...)
     {
@@ -118,17 +118,17 @@ void*
 operator new[](size_t size, const std::nothrow_t&)
 #if __has_feature(cxx_noexcept)
     noexcept
-#elif !defined(__DUETTO__)
+#elif !defined(__CHEERP__)
     throw()
 #endif
 {
     void* p = 0;
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     try
     {
 #endif
         p = ::operator new[](size);
-#ifndef __DUETTO__
+#ifndef __CHEERP__
     }
     catch (...)
     {
