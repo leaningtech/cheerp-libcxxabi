@@ -14,6 +14,8 @@
 #include <new>
 #include <cstdlib>
 
+#ifndef __CHEERP__
+
 /*
 [new.delete.single]
 
@@ -47,11 +49,7 @@ operator new(std::size_t size)
         if (nh)
             nh();
         else
-#ifdef __CHEERP__
-            return 0;
-#else
             throw std::bad_alloc();
-#endif
     }
     return p;
 }
@@ -73,22 +71,18 @@ void*
 operator new(size_t size, const std::nothrow_t&)
 #if __has_feature(cxx_noexcept)
     noexcept
-#elif !defined(__CHEERP__)
+#else
     throw()
 #endif
 {
     void* p = 0;
-#ifndef __CHEERP__
     try
     {
-#endif
         p = ::operator new(size);
-#ifndef __CHEERP__
     }
     catch (...)
     {
     }
-#endif
     return p;
 }
 
@@ -118,22 +112,18 @@ void*
 operator new[](size_t size, const std::nothrow_t&)
 #if __has_feature(cxx_noexcept)
     noexcept
-#elif !defined(__CHEERP__)
+#else
     throw()
 #endif
 {
     void* p = 0;
-#ifndef __CHEERP__
     try
     {
-#endif
         p = ::operator new[](size);
-#ifndef __CHEERP__
     }
     catch (...)
     {
     }
-#endif
     return p;
 }
 
@@ -206,6 +196,8 @@ operator delete[] (void* ptr, const std::nothrow_t&)
 {
     ::operator delete[](ptr);
 }
+
+#endif
 
 namespace std
 {
