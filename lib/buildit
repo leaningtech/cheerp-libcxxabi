@@ -81,6 +81,7 @@ fi
 
 set -x
 
+rm -f *.bc
 for FILE in ../src/*.cpp; do
 	if [ "$FILE" == "../src/cxa_default_handlers.cpp" -o \
 		"$FILE" == "../src/cxa_exception.cpp" -o \
@@ -102,9 +103,9 @@ case $TRIPLE in
   done
   ;;
 esac
-/opt/cheerp/bin/llvm-link *.o -o libcxxabi.bc
+/opt/cheerp/bin/llvm-link *.bc -o libcxxabi.bc
 
 if [ -z $RC_XBS ]
 then
-    rm *.o
+    rm -f *.o
 fi
