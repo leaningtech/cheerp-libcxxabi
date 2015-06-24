@@ -16,6 +16,12 @@
 namespace __cxxabiv1
 {
 
+#ifdef __CHEERP__
+typedef std::ptrdiff_t obj_type;
+#else
+typedef void* obj_type;
+#endif
+
 #pragma GCC visibility push(hidden)
 
 class __attribute__ ((__visibility__("default"))) __shim_type_info
@@ -26,7 +32,7 @@ public:
 
      __attribute__ ((__visibility__("hidden"))) virtual void noop1() const;
      __attribute__ ((__visibility__("hidden"))) virtual void noop2() const;
-     __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info* thrown_type, void*& adjustedPtr) const = 0;
+     __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info* thrown_type, obj_type& adjustedPtr) const = 0;
 };
 
 class __attribute__ ((__visibility__("default"))) __fundamental_type_info
@@ -34,7 +40,7 @@ class __attribute__ ((__visibility__("default"))) __fundamental_type_info
 {
 public:
     __attribute__ ((__visibility__("hidden"))) virtual ~__fundamental_type_info();
-    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, void*&) const;
+    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, obj_type&) const;
 };
 
 class __attribute__ ((__visibility__("default"))) __array_type_info
@@ -42,7 +48,7 @@ class __attribute__ ((__visibility__("default"))) __array_type_info
 {
 public:
     __attribute__ ((__visibility__("hidden"))) virtual ~__array_type_info();
-    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, void*&) const;
+    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, obj_type&) const;
 };
 
 class __attribute__ ((__visibility__("default"))) __function_type_info
@@ -50,7 +56,7 @@ class __attribute__ ((__visibility__("default"))) __function_type_info
 {
 public:
     __attribute__ ((__visibility__("hidden"))) virtual ~__function_type_info();
-    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, void*&) const;
+    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, obj_type&) const;
 };
 
 class __attribute__ ((__visibility__("default"))) __enum_type_info
@@ -58,7 +64,7 @@ class __attribute__ ((__visibility__("default"))) __enum_type_info
 {
 public:
     __attribute__ ((__visibility__("hidden"))) virtual ~__enum_type_info();
-    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, void*&) const;
+    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, obj_type&) const;
 };
 
 enum
@@ -77,16 +83,25 @@ struct __dynamic_cast_info
 // const data supplied to the search:
 
     const __class_type_info* dst_type;
+#ifdef __CHEERP__
+    std::ptrdiff_t static_ptr;
+#else
     const void* static_ptr;
+#endif
     const __class_type_info* static_type;
     std::ptrdiff_t src2dst_offset;
 
 // Data that represents the answer:
 
+#ifdef __CHEERP__
     // pointer to a dst_type which has (static_ptr, static_type) above it
-    const void* dst_ptr_leading_to_static_ptr;
+    std::ptrdiff_t dst_ptr_leading_to_static_ptr;
     // pointer to a dst_type which does not have (static_ptr, static_type) above it
+    std::ptrdiff_t dst_ptr_not_leading_to_static_ptr;
+#else
+    const void* dst_ptr_leading_to_static_ptr;
     const void* dst_ptr_not_leading_to_static_ptr;
+#endif
 
     // The following three paths are either unknown, public_path or not_public_path.
     // access of path from dst_ptr_leading_to_static_ptr to (static_ptr, static_type)
@@ -127,19 +142,19 @@ public:
     __attribute__ ((__visibility__("hidden"))) virtual ~__class_type_info();
 
     __attribute__ ((__visibility__("hidden")))
-        void process_static_type_above_dst(__dynamic_cast_info*, const void*, const void*, int) const;
+        void process_static_type_above_dst(__dynamic_cast_info*, const obj_type, const obj_type, int) const;
     __attribute__ ((__visibility__("hidden")))
-        void process_static_type_below_dst(__dynamic_cast_info*, const void*, int) const;
+        void process_static_type_below_dst(__dynamic_cast_info*, const obj_type, int) const;
     __attribute__ ((__visibility__("hidden")))
-        void process_found_base_class(__dynamic_cast_info*, void*, int) const;
+        void process_found_base_class(__dynamic_cast_info*, const obj_type, int) const;
     __attribute__ ((__visibility__("hidden")))
-        virtual void search_above_dst(__dynamic_cast_info*, const void*, const void*, int, bool) const;
+        virtual void search_above_dst(__dynamic_cast_info*, const obj_type, const obj_type, int, bool) const;
     __attribute__ ((__visibility__("hidden")))
-        virtual void search_below_dst(__dynamic_cast_info*, const void*, int, bool) const;
+        virtual void search_below_dst(__dynamic_cast_info*, const obj_type, int, bool) const;
     __attribute__ ((__visibility__("hidden")))
-        virtual bool can_catch(const __shim_type_info*, void*&) const;
+        virtual bool can_catch(const __shim_type_info*, obj_type&) const;
     __attribute__ ((__visibility__("hidden")))
-        virtual void has_unambiguous_public_base(__dynamic_cast_info*, void*, int) const;
+        virtual void has_unambiguous_public_base(__dynamic_cast_info*, obj_type, int) const;
 };
 
 // Has one non-virtual public base class at offset zero
@@ -152,11 +167,11 @@ public:
     __attribute__ ((__visibility__("hidden"))) virtual ~__si_class_type_info();
 
     __attribute__ ((__visibility__("hidden")))
-        virtual void search_above_dst(__dynamic_cast_info*, const void*, const void*, int, bool) const;
+        virtual void search_above_dst(__dynamic_cast_info*, const obj_type, const obj_type, int, bool) const;
     __attribute__ ((__visibility__("hidden")))
-        virtual void search_below_dst(__dynamic_cast_info*, const void*, int, bool) const;
+        virtual void search_below_dst(__dynamic_cast_info*, const obj_type, int, bool) const;
     __attribute__ ((__visibility__("hidden")))
-        virtual void has_unambiguous_public_base(__dynamic_cast_info*, void*, int) const;
+        virtual void has_unambiguous_public_base(__dynamic_cast_info*, obj_type, int) const;
 };
 
 struct __base_class_type_info
@@ -172,9 +187,9 @@ public:
         __offset_shift = 8
     };
 
-    void search_above_dst(__dynamic_cast_info*, const void*, const void*, int, bool) const;
-    void search_below_dst(__dynamic_cast_info*, const void*, int, bool) const;
-    void has_unambiguous_public_base(__dynamic_cast_info*, void*, int) const;
+    void search_above_dst(__dynamic_cast_info*, const obj_type, const obj_type, int, bool) const;
+    void search_below_dst(__dynamic_cast_info*, const obj_type, int, bool) const;
+    void has_unambiguous_public_base(__dynamic_cast_info*, obj_type, int) const;
 };
 
 // Has one or more base classes
@@ -197,11 +212,11 @@ public:
     __attribute__ ((__visibility__("hidden"))) virtual ~__vmi_class_type_info();
 
     __attribute__ ((__visibility__("hidden")))
-        virtual void search_above_dst(__dynamic_cast_info*, const void*, const void*, int, bool) const;
+        virtual void search_above_dst(__dynamic_cast_info*, const obj_type, const obj_type, int, bool) const;
     __attribute__ ((__visibility__("hidden")))
-        virtual void search_below_dst(__dynamic_cast_info*, const void*, int, bool) const;
+        virtual void search_below_dst(__dynamic_cast_info*, const obj_type, int, bool) const;
     __attribute__ ((__visibility__("hidden")))
-        virtual void has_unambiguous_public_base(__dynamic_cast_info*, void*, int) const;
+        virtual void has_unambiguous_public_base(__dynamic_cast_info*, obj_type, int) const;
 };
 
 class __attribute__ ((__visibility__("default"))) __pbase_type_info
@@ -221,7 +236,7 @@ public:
     };
 
     __attribute__ ((__visibility__("hidden"))) virtual ~__pbase_type_info();
-    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, void*&) const;
+    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, obj_type&) const;
 };
 
 class __attribute__ ((__visibility__("default"))) __pointer_type_info
@@ -229,7 +244,7 @@ class __attribute__ ((__visibility__("default"))) __pointer_type_info
 {
 public:
     __attribute__ ((__visibility__("hidden"))) virtual ~__pointer_type_info();
-    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, void*&) const;
+    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, obj_type&) const;
     __attribute__ ((__visibility__("hidden"))) bool can_catch_nested(const __shim_type_info*) const;
 };
 
@@ -240,7 +255,7 @@ public:
     const __class_type_info* __context;
 
     __attribute__ ((__visibility__("hidden"))) virtual ~__pointer_to_member_type_info();
-    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, void*&) const;
+    __attribute__ ((__visibility__("hidden"))) virtual bool can_catch(const __shim_type_info*, obj_type&) const;
     __attribute__ ((__visibility__("hidden"))) bool can_catch_nested(const __shim_type_info*) const;
 };
 
