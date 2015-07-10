@@ -36,7 +36,9 @@ void __cxa_bad_typeid(void) {
 
 LIBCXXABI_NORETURN
 void __cxa_throw_bad_array_new_length(void) {
+#ifndef __CHEERP__
     throw std::bad_array_new_length();
+#endif
 }
 }  // extern "C"
 
