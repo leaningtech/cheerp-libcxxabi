@@ -21,7 +21,7 @@ set(LIBCXXABI_SOURCES
 
 if(CHEERP)
 # Remove files which are not currently supported
-list(REMOVE_ITEM LIBCXXABI_SOURCES cxa_default_handlers.cpp cxa_exception.cpp cxa_handlers.cpp cxa_exception_storage.cpp cxa_unexpected.cpp private_typeinfo.cpp cxa_personality.cpp)
+list(REMOVE_ITEM LIBCXXABI_SOURCES cxa_default_handlers.cpp cxa_exception.cpp cxa_handlers.cpp cxa_exception_storage.cpp cxa_unexpected.cpp cxa_personality.cpp)
 endif()
 
 if (UNIX AND NOT (APPLE OR CYGWIN))
