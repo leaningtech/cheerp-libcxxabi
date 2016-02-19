@@ -661,8 +661,8 @@ __dynamic_cast(const void *static_ptr,
     // Currently clang always sets src2dst_offset to -1 (no hint).
     // Get (dynamic_ptr, dynamic_type) from static_ptr
 #ifdef __CHEERP__
-    std::ptrdiff_t dynamic_ptr = 0;
-    std::ptrdiff_t static_ptr = static_downcast_offset;
+    std::ptrdiff_t dynamic_ptr = 1;
+    std::ptrdiff_t static_ptr = static_downcast_offset + 1;
     const __class_type_info* dynamic_type = vtable->rtti_info;
 #else
     void **vtable = *static_cast<void ** const *>(static_ptr);
