@@ -4780,11 +4780,19 @@ public:
 
     T* allocate(std::size_t n)
     {
+#ifdef __CHEERP__
+        return reinterpret_cast<T*>(std::malloc(n*sizeof(T)));
+#else
         return reinterpret_cast<T*>(a_.allocate(n*sizeof(T)));
+#endif
     }
     void deallocate(T* p, std::size_t n) noexcept
     {
+#ifdef __CHEERP__
+        std::free(p);
+#else
         a_.deallocate(reinterpret_cast<char*>(p), n*sizeof(T));
+#endif
     }
 
     template <class T1, std::size_t N1, class U, std::size_t M>
@@ -4937,7 +4945,7 @@ __cxa_demangle(const char* mangled_name, char* buf, size_t* n, int* status)
         size_t sz = db.names.back().size() + 1;
         if (sz > internal_size)
         {
-            char* newbuf = static_cast<char*>(std::realloc(buf, sz));
+            char* newbuf = buf ? static_cast<char*>(std::realloc(buf, sz)) : static_cast<char*>(std::malloc(sz));
             if (newbuf == nullptr)
             {
                 internal_status = memory_alloc_failure;
