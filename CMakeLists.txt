@@ -158,6 +158,14 @@ set(LIBCXXABI_LIBCXX_PATH "${LIBCXXABI_LIBCXX_PATH}" CACHE PATH
 option(LIBCXXABI_HERMETIC_STATIC_LIBRARY
   "Do not export any symbols from the static library." OFF)
 
+if (CMAKE_SYSTEM_NAME STREQUAL "Cheerp")
+  set(CHEERP_MODE "genericjs" CACHE STRING "Cheerp mode used to build the library")
+  set_property(CACHE CHEERP_MODE PROPERTY STRINGS genericjs asmjs)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nostdlib -frtti -cheerp-mode=${CHEERP_MODE}")
+else ()
+  set(CHEERP_MODE "")
+endif ()
+
 #===============================================================================
 # Configure System
 #===============================================================================
