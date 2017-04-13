@@ -6,7 +6,6 @@
 // Source Licenses. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
-
 #include "private_typeinfo.h"
 
 // The flag _LIBCXX_DYNAMIC_FALLBACK is used to make dynamic_cast more
@@ -615,6 +614,9 @@ bool __pointer_to_member_type_info::can_catch_nested(
 
 struct __vtable_base
 {
+#ifdef __ASMJS__
+	const std::ptrdiff_t offset_to_derived;
+#endif
 	const __class_type_info* rtti_info;
 };
 
@@ -635,8 +637,13 @@ __dynamic_cast(const void* static_ptr,
     // Currently clang always sets src2dst_offset to -1 (no hint).
     // Get (dynamic_ptr, dynamic_type) from static_ptr
 #ifdef __CHEERP__
+#ifdef __ASMJS__
+    std::ptrdiff_t dynamic_ptr = static_downcast_offset + vtable->offset_to_derived;
+    std::ptrdiff_t static_ptr = static_downcast_offset ;
+#else
     std::ptrdiff_t dynamic_ptr = 1;
     std::ptrdiff_t static_ptr = static_downcast_offset + 1;
+#endif
     const __class_type_info* dynamic_type = vtable->rtti_info;
 #else
     void **vtable = *static_cast<void ** const *>(static_ptr);
@@ -724,7 +731,12 @@ __dynamic_cast(const void* static_ptr,
         }
     }
 #ifdef __CHEERP__
-    return dst_ptr==(-1<<31)?(-1<<31):static_ptr-dst_ptr;
+    return dst_ptr==(-1<<31)?(-1<<31):
+#ifdef __ASMJS__
+        dst_ptr-static_ptr;
+#else
+        static_ptr-dst_ptr;
+#endif
 #else
     return const_cast<void*>(dst_ptr);
 #endif
