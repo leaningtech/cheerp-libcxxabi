@@ -28,8 +28,12 @@ extern "C" void android_set_abort_message(const char* msg);
 #   endif
 #endif
 
+#ifdef __CHEERP__
+__attribute__((cheerp_genericjs))
+#endif
 void abort_message(const char* format, ...)
 {
+#ifndef __CHEERP__
     // write message to stderr
 #if !defined(NDEBUG) || !defined(LIBCXXABI_BAREMETAL)
 #ifdef __APPLE__
@@ -72,6 +76,7 @@ void abort_message(const char* format, ...)
     __assert2(__FILE__, __LINE__, __func__, buffer);
 #endif // __ANDROID_API__ >= 21
 #endif // __BIONIC__
+#endif // !__CHEERP__
 
     abort();
 }
