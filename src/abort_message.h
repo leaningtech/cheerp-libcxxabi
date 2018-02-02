@@ -16,6 +16,9 @@ extern "C" {
 #endif
 
 _LIBCXXABI_HIDDEN _LIBCXXABI_NORETURN void
+#ifdef __CHEERP__
+__attribute__((cheerp_genericjs))
+#endif
 abort_message(const char *format, ...) __attribute__((format(printf, 1, 2)));
 
 #ifdef __cplusplus
