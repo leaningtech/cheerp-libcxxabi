@@ -19,6 +19,9 @@ extern "C" {
 #endif
 
 __attribute__((visibility("hidden"), noreturn))
+#ifdef __CHEERP__
+__attribute__((cheerp_genericjs))
+#endif
        void abort_message(const char* format, ...) 
             __attribute__((format(printf, 1, 2)));
 
