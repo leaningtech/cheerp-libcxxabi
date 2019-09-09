@@ -28,9 +28,6 @@ extern "C" void android_set_abort_message(const char* msg);
 #   endif
 #endif
 
-#ifdef __CHEERP__
-__attribute__((cheerp_genericjs))
-#endif
 void abort_message(const char* format, ...)
 {
 #ifndef __CHEERP__
