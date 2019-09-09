@@ -31,9 +31,6 @@ extern "C" void android_set_abort_message(const char* msg);
 #   endif
 #endif
 
-#ifdef __CHEERP__
-__attribute__((cheerp_genericjs))
-#endif
 __attribute__((visibility("hidden"), noreturn))
 void abort_message(const char* format, ...)
 {
